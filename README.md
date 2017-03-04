@@ -1,4 +1,4 @@
-# ImageLoad
+l# ImageLoad
 
 图片加载，分析图片怎么加载到Imageview上的，主要分析了Imageloader，Glide和Picasso。
 
@@ -314,6 +314,26 @@
 	我们可以看上面的run方法里
 	第一个先执行的会cancelDisplay（）方法，这个方法会删除map里缓存的imageAware和url，第二个后执行的会找不到url，所以isViewWasReused返回true
 	不执行下面display了
+
+
+	我们下面研究下ImageLoader缓存问题
+	1）内存缓存，有好几种方式，都有大小限制
+	（1）Map<String, Bitmap> lruCache = Collections.synchronizedMap(new LinkedHashMap<String, Bitmap>(INITIAL_CAPACITY, LOAD_FACTOR, true));使用同步的LinkHashMap就行存储
+	（2）private final List<Bitmap> queue = Collections.synchronizedList(new LinkedList<Bitmap>());使用同步的队列进行存储
+	（3）private final Map<Bitmap, Integer> valueSizes = Collections.synchronizedMap(new HashMap<Bitmap, Integer>());使用HashMap进行存储，key是bitmap，value是bitmap的大小
+	（4）private final Map<String, Long> loadingDates = Collections.synchronizedMap(new HashMap<String, Long>());限制bitmap时间周期的存储
+	，value是时间戳
+	（5）public class WeakMemoryCache extends BaseMemoryCache {
+		@Override
+			protected Reference<Bitmap> createReference(Bitmap value) {
+				return new WeakReference<Bitmap>(value);
+				}
+			}
+		使用弱引用进行存储，容易被回收，不会导致内存泄漏
+
+	2）硬盘缓存
+	（1）private final Map<File, Long> loadingDates = Collections.synchronizedMap(new HashMap<File, Long>());时间戳进行存储，value是时间戳
+	
 
 
 2、Glide源码研究

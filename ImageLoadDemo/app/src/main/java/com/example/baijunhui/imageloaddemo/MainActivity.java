@@ -1,7 +1,10 @@
 package com.example.baijunhui.imageloaddemo;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
